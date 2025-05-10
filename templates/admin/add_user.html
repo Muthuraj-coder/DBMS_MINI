@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New User | Student Information System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="page-header">Add New User</h1>
+        <a href="{{ url_for('manage_users') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Users
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <form method="post" action="{{ url_for('add_user') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id }}" class="form-label">{{ form.username.label }}</label>
+                            {{ form.username(class="form-control", placeholder="Choose a username", required=true) }}
+                            <div class="invalid-feedback">Please choose a username.</div>
+                            {% if form.username.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email(class="form-control", type="email", placeholder="Enter email address", required=true) }}
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password.id }}" class="form-label">{{ form.password.label }}</label>
+                            <div class="input-group">
+                                {{ form.password(class="form-control", placeholder="Enter password", required=true) }}
+                                <span class="input-group-text" onclick="togglePasswordVisibility('{{ form.password.id }}')">
+                                    <i class="bi bi-eye"></i>
+                                </span>
+                            </div>
+                            <div class="form-text">Password must be at least 8 characters long.</div>
+                            {% if form.password.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.confirm_password.id }}" class="form-label">{{ form.confirm_password.label }}</label>
+                            {{ form.confirm_password(class="form-control", placeholder="Confirm password", required=true) }}
+                            <div class="invalid-feedback">Please confirm the password.</div>
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.role.id }}" class="form-label">{{ form.role.label }}</label>
+                            {{ form.role(class="form-select", required=true) }}
+                            <div class="invalid-feedback">Please select a role.</div>
+                            {% if form.role.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.role.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
