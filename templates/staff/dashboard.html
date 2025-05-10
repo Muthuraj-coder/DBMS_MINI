@@ -154,9 +154,9 @@
                     <div class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h6 class="mb-1">{{ attendance[0] }}</h6>
-                            <small>{{ attendance[2].strftime('%Y-%m-%d') }}</small>
+                            <small>{{ attendance[1] }} records</small>
                         </div>
-                        <p class="mb-1">{{ attendance[1] }} student records</p>
+                        <p class="mb-1">Course: {{ attendance[0] }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -184,10 +184,10 @@
                     {% for grade in recent_grades %}
                     <div class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">{{ grade[0] }} - {{ grade[2] }}</h6>
-                            <small>{{ grade[3].strftime('%Y-%m-%d') }}</small>
+                            <h6 class="mb-1">{{ grade[0] }}</h6>
+                            <small>{{ grade[1] }} grades</small>
                         </div>
-                        <p class="mb-1">{{ grade[1] }} student grades recorded</p>
+                        <p class="mb-1">Course: {{ grade[0] }}</p>
                     </div>
                     {% endfor %}
                 </div>

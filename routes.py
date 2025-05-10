@@ -1059,7 +1059,7 @@ def api_grade_data(student_id):
 
 @app.route('/api/course_enrollment_stats')
 @login_required
-@requires_roles('admin')
+@requires_roles('admin', 'staff')
 def api_course_enrollment_stats():
     # Get enrollment counts for all courses
     enrollments = db.session.query(
@@ -1080,7 +1080,7 @@ def api_course_enrollment_stats():
 
 @app.route('/api/course_attendance_stats')
 @login_required
-@requires_roles('admin')
+@requires_roles('admin', 'staff')
 def api_course_attendance_stats():
     # Get attendance statistics for all courses
     attendance_stats = db.session.query(
