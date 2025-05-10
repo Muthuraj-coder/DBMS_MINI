@@ -222,9 +222,10 @@ def admin_dashboard():
         Course.title,
         func.count(Attendance.id).label('count'),
         func.avg(
-            case([
-                (Attendance.status == 'present', 1)
-            ], else_=0)
+            case(
+                (Attendance.status == 'present', 1),
+                else_=0
+            )
         ).label('attendance_rate')
     ).join(
         Attendance, Course.id == Attendance.course_id
@@ -1085,9 +1086,9 @@ def api_course_attendance_stats():
     attendance_stats = db.session.query(
         Course.title,
         func.count(Attendance.id).label('total'),
-        func.sum(case([(Attendance.status == 'present', 1)], else_=0)).label('present'),
-        func.sum(case([(Attendance.status == 'absent', 1)], else_=0)).label('absent'),
-        func.sum(case([(Attendance.status == 'excused', 1)], else_=0)).label('excused')
+        func.sum(case((Attendance.status == 'present', 1), else_=0)).label('present'),
+        func.sum(case((Attendance.status == 'absent', 1), else_=0)).label('absent'),
+        func.sum(case((Attendance.status == 'excused', 1), else_=0)).label('excused')
     ).join(
         Attendance, Course.id == Attendance.course_id
     ).group_by(
