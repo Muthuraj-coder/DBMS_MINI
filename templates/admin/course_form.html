@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if course %}Edit{% else %}Add{% endif %} Course | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="page-header">{% if course %}Edit{% else %}Add{% endif %} Course</h1>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('manage_courses') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Courses
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{% if course %}{{ url_for('edit_course', course_id=course.id) }}{% else %}{{ url_for('add_course') }}{% endif %}" class="needs-validation" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-3">
+                <label for="{{ form.course_code.id }}" class="col-sm-3 col-form-label">{{ form.course_code.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.course_code(class="form-control", required=true) }}
+                    <div class="invalid-feedback">Please provide a course code.</div>
+                    {% if form.course_code.errors %}
+                    <div class="text-danger">
+                        {% for error in form.course_code.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="{{ form.title.id }}" class="col-sm-3 col-form-label">{{ form.title.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.title(class="form-control", required=true) }}
+                    <div class="invalid-feedback">Please provide a course title.</div>
+                    {% if form.title.errors %}
+                    <div class="text-danger">
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="{{ form.description.id }}" class="col-sm-3 col-form-label">{{ form.description.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.description(class="form-control", rows=3) }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="{{ form.credits.id }}" class="col-sm-3 col-form-label">{{ form.credits.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.credits(class="form-control", type="number", min="1", required=true) }}
+                    <div class="invalid-feedback">Please provide the number of credits.</div>
+                    {% if form.credits.errors %}
+                    <div class="text-danger">
+                        {% for error in form.credits.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="{{ form.semester.id }}" class="col-sm-3 col-form-label">{{ form.semester.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.semester(class="form-control", type="number", min="1", required=true) }}
+                    <div class="invalid-feedback">Please provide a semester number.</div>
+                    {% if form.semester.errors %}
+                    <div class="text-danger">
+                        {% for error in form.semester.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="{{ form.instructor_id.id }}" class="col-sm-3 col-form-label">{{ form.instructor_id.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.instructor_id(class="form-select", required=true) }}
+                    <div class="invalid-feedback">Please select an instructor.</div>
+                    {% if form.instructor_id.errors %}
+                    <div class="text-danger">
+                        {% for error in form.instructor_id.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-9 offset-sm-3">
+                    {{ form.submit(class="btn btn-primary me-2") }}
+                    <a href="{{ url_for('manage_courses') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

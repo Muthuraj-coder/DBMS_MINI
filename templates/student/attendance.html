@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}My Attendance | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="page-header">My Attendance</h1>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer"></i> Print Report
+        </button>
+    </div>
+</div>
+
+<!-- Attendance Visualization -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Attendance Summary</h5>
+    </div>
+    <div class="card-body">
+        <div class="chart-container">
+            <canvas id="attendanceChart" data-student-id="{{ student.id }}"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Details by Course -->
+<div class="row">
+    {% for course_id, data in attendance_data.items() %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ data.course.course_code }}: {{ data.course.title }}</h5>
+                <span class="badge {% if data.percentage >= 90 %}bg-success{% elif data.percentage >= 75 %}bg-info{% elif data.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ "%.1f"|format(data.percentage) }}%
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="attendance-stats mb-3">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="attendance-present">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <h4>{{ data.present }}</h4>
+                            </div>
+                            <div class="small text-muted">Present</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="attendance-absent">
+                                <i class="bi bi-x-circle-fill"></i>
+                                <h4>{{ data.absent }}</h4>
+                            </div>
+                            <div class="small text-muted">Absent</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="attendance-excused">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <h4>{{ data.excused }}</h4>
+                            </div>
+                            <div class="small text-muted">Excused</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6>Recent Records</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in data.records %}
+                            <tr>
+                                <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="badge {% if record.status == 'present' %}bg-success{% elif record.status == 'excused' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ record.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if record.remarks %}
+                                    <span data-bs-toggle="tooltip" title="{{ record.remarks }}">
+                                        {{ record.remarks|truncate(20) }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- No Data Message -->
+{% if not attendance_data %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i> No attendance records found. Records will appear here once your instructors mark attendance.
+</div>
+{% endif %}
+{% endblock %}

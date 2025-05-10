@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="page-header">My Profile</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student Information</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ url_for('student_profile') }}" class="needs-validation" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <div class="row mb-4">
+                <div class="col-md-3 text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle" style="font-size: 7rem;"></i>
+                    </div>
+                    <div class="text-muted">{{ current_user.username }}</div>
+                    <div class="text-muted">{{ current_user.email }}</div>
+                </div>
+                
+                <div class="col-md-9">
+                    <div class="row g-3">
+                        <!-- Personal Information -->
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id }}" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name(class="form-control", required=true) }}
+                            <div class="invalid-feedback">Please provide your first name.</div>
+                            {% if form.first_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.first_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id }}" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name(class="form-control", required=true) }}
+                            <div class="invalid-feedback">Please provide your last name.</div>
+                            {% if form.last_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.last_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.student_id.id }}" class="form-label">{{ form.student_id.label }}</label>
+                            {{ form.student_id(class="form-control", required=true) }}
+                            <div class="invalid-feedback">Please provide your student ID.</div>
+                            {% if form.student_id.errors %}
+                            <div class="text-danger">
+                                {% for error in form.student_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.date_of_birth.id }}" class="form-label">{{ form.date_of_birth.label }}</label>
+                            {{ form.date_of_birth(class="form-control", type="date") }}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.address.id }}" class="form-label">{{ form.address.label }}</label>
+                            {{ form.address(class="form-control") }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.phone_number.id }}" class="form-label">{{ form.phone_number.label }}</label>
+                            {{ form.phone_number(class="form-control") }}
+                        </div>
+                        
+                        <!-- Academic Information -->
+                        <div class="col-md-6">
+                            <label for="{{ form.current_semester.id }}" class="form-label">{{ form.current_semester.label }}</label>
+                            {{ form.current_semester(class="form-control", type="number", min="1") }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.enrollment_date.id }}" class="form-label">{{ form.enrollment_date.label }}</label>
+                            {{ form.enrollment_date(class="form-control", type="date") }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.graduation_date.id }}" class="form-label">{{ form.graduation_date.label }}</label>
+                            {{ form.graduation_date(class="form-control", type="date") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

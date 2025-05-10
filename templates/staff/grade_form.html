@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if grade %}Edit{% else %}Add{% endif %} Grade | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="page-header">{% if grade %}Edit{% else %}Add{% endif %} Grade</h1>
+        <p class="text-muted">
+            <strong>Student:</strong> {{ student.full_name() }} ({{ student.student_id }})<br>
+            <strong>Course:</strong> {{ course.course_code }} - {{ course.title }}
+        </p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('manage_student_grades', student_id=student.id, course_id=course.id) }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Student Grades
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{% if grade %}{{ url_for('edit_grade', grade_id=grade.id) }}{% else %}{{ url_for('add_grade', student_id=student.id, course_id=course.id) }}{% endif %}" class="needs-validation" novalidate>
+            {{ form.hidden_tag() }}
+            {{ form.student_id() }}
+
+            <div class="row mb-3">
+                <label for="{{ form.course_id.id }}" class="col-sm-3 col-form-label">{{ form.course_id.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.course_id(class="form-select", disabled=true) }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.assignment_name.id }}" class="col-sm-3 col-form-label">{{ form.assignment_name.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.assignment_name(class="form-control", required=true) }}
+                    <div class="invalid-feedback">Please provide an assignment name.</div>
+                    {% if form.assignment_name.errors %}
+                    <div class="text-danger">
+                        {% for error in form.assignment_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.assignment_type.id }}" class="col-sm-3 col-form-label">{{ form.assignment_type.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.assignment_type(class="form-select", required=true) }}
+                    <div class="invalid-feedback">Please select an assignment type.</div>
+                    {% if form.assignment_type.errors %}
+                    <div class="text-danger">
+                        {% for error in form.assignment_type.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.max_score.id }}" class="col-sm-3 col-form-label">{{ form.max_score.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.max_score(class="form-control", required=true, type="number", step="0.01", min="0") }}
+                    <div class="invalid-feedback">Please provide a valid maximum score.</div>
+                    {% if form.max_score.errors %}
+                    <div class="text-danger">
+                        {% for error in form.max_score.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.score.id }}" class="col-sm-3 col-form-label">{{ form.score.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.score(class="form-control", required=true, type="number", step="0.01", min="0") }}
+                    <div class="invalid-feedback">Please provide a valid score.</div>
+                    {% if form.score.errors %}
+                    <div class="text-danger">
+                        {% for error in form.score.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.weight.id }}" class="col-sm-3 col-form-label">{{ form.weight.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.weight(class="form-control", required=true, type="number", step="0.01", min="0", max="100") }}
+                    <div class="form-text">Weight as a percentage of the final grade (e.g., 20 for 20%).</div>
+                    <div class="invalid-feedback">Please provide a valid weight percentage.</div>
+                    {% if form.weight.errors %}
+                    <div class="text-danger">
+                        {% for error in form.weight.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.comments.id }}" class="col-sm-3 col-form-label">{{ form.comments.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.comments(class="form-control", rows=4) }}
+                    <div class="form-text">Optional comments or feedback for the student.</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-9 offset-sm-3">
+                    {{ form.submit(class="btn btn-primary me-2") }}
+                    <a href="{{ url_for('manage_student_grades', student_id=student.id, course_id=course.id) }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Grade Preview (updates as you type) -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Grade Preview</h5>
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3">
+                <h6 class="text-muted">Score</h6>
+                <h3 id="scorePreview">-</h3>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="text-muted">Percentage</h6>
+                <h3 id="percentagePreview">-</h3>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="text-muted">Letter Grade</h6>
+                <h3 id="letterGradePreview">-</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const scoreInput = document.getElementById('{{ form.score.id }}');
+        const maxScoreInput = document.getElementById('{{ form.max_score.id }}');
+        
+        const updatePreview = function() {
+            const score = parseFloat(scoreInput.value) || 0;
+            const maxScore = parseFloat(maxScoreInput.value) || 1;
+            
+            // Avoid division by zero
+            if (maxScore === 0) {
+                document.getElementById('scorePreview').textContent = `${score}/0`;
+                document.getElementById('percentagePreview').textContent = "N/A";
+                document.getElementById('letterGradePreview').textContent = "N/A";
+                return;
+            }
+            
+            const percentage = (score / maxScore) * 100;
+            let letterGrade = 'F';
+            let colorClass = 'text-danger';
+            
+            if (percentage >= 90) {
+                letterGrade = 'A';
+                colorClass = 'text-success';
+            } else if (percentage >= 80) {
+                letterGrade = 'B';
+                colorClass = 'text-info';
+            } else if (percentage >= 70) {
+                letterGrade = 'C';
+                colorClass = 'text-warning';
+            } else if (percentage >= 60) {
+                letterGrade = 'D';
+                colorClass = 'text-secondary';
+            }
+            
+            document.getElementById('scorePreview').textContent = `${score}/${maxScore}`;
+            
+            const percentageEl = document.getElementById('percentagePreview');
+            percentageEl.textContent = `${percentage.toFixed(1)}%`;
+            percentageEl.className = colorClass;
+            
+            const letterGradeEl = document.getElementById('letterGradePreview');
+            letterGradeEl.textContent = letterGrade;
+            letterGradeEl.className = colorClass;
+        };
+        
+        // Set initial values
+        updatePreview();
+        
+        // Update on input change
+        scoreInput.addEventListener('input', updatePreview);
+        maxScoreInput.addEventListener('input', updatePreview);
+    });
+</script>
+{% endblock %}

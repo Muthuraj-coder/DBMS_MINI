@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Grades for {{ course.course_code }} | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="page-header">Manage Grades</h1>
+        <p class="text-muted">
+            <strong>Course:</strong> {{ course.course_code }} - {{ course.title }}
+        </p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('staff_grades') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Grades
+        </a>
+    </div>
+</div>
+
+<!-- Students and Their Grades -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student List</h5>
+    </div>
+    <div class="card-body">
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover datatable">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Current Grade</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.first_name }} {{ student.last_name }}</td>
+                        <td id="grade-{{ student.id }}">Calculating...</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('manage_student_grades', student_id=student.id, course_id=course.id) }}" class="btn btn-info">
+                                    <i class="bi bi-list-check"></i> View Grades
+                                </a>
+                                <a href="{{ url_for('add_grade', student_id=student.id, course_id=course.id) }}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Add Grade
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i> No students are enrolled in this course.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Class Grade Distribution -->
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Grade Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="gradeDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Grade Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-muted">Class Average</h6>
+                        <h3 id="classAverage">-</h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-muted">Highest Grade</h6>
+                        <h3 id="highestGrade">-</h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-muted">Lowest Grade</h6>
+                        <h3 id="lowestGrade">-</h3>
+                    </div>
+                </div>
+                
+                <div class="table-responsive mt-3">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Grade Range</th>
+                                <th>Letter Grade</th>
+                                <th>Students</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradeSummaryTable">
+                            <tr>
+                                <td colspan="4" class="text-center">Loading data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simulate fetching grade data - in a real implementation, this would be actual API data
+        const mockData = {
+            'A': 5,
+            'B': 8,
+            'C': 6,
+            'D': 3,
+            'F': 2
+        };
+        
+        // Create grade distribution chart
+        const gradeCtx = document.getElementById('gradeDistributionChart').getContext('2d');
+        new Chart(gradeCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(mockData),
+                datasets: [{
+                    label: 'Students',
+                    data: Object.values(mockData),
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.7)',  // A
+                        'rgba(23, 162, 184, 0.7)', // B
+                        'rgba(255, 193, 7, 0.7)',  // C
+                        'rgba(255, 153, 102, 0.7)', // D
+                        'rgba(220, 53, 69, 0.7)'   // F
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(23, 162, 184, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(255, 153, 102, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Letter Grade'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Update summary statistics
+        document.getElementById('classAverage').textContent = '78.5%';
+        document.getElementById('highestGrade').textContent = '97.2%';
+        document.getElementById('lowestGrade').textContent = '52.8%';
+        
+        // Update grade summary table
+        const summaryTable = document.getElementById('gradeSummaryTable');
+        summaryTable.innerHTML = `
+            <tr>
+                <td>90% - 100%</td>
+                <td>A</td>
+                <td>5</td>
+                <td>20.8%</td>
+            </tr>
+            <tr>
+                <td>80% - 89%</td>
+                <td>B</td>
+                <td>8</td>
+                <td>33.3%</td>
+            </tr>
+            <tr>
+                <td>70% - 79%</td>
+                <td>C</td>
+                <td>6</td>
+                <td>25.0%</td>
+            </tr>
+            <tr>
+                <td>60% - 69%</td>
+                <td>D</td>
+                <td>3</td>
+                <td>12.5%</td>
+            </tr>
+            <tr>
+                <td>0% - 59%</td>
+                <td>F</td>
+                <td>2</td>
+                <td>8.3%</td>
+            </tr>
+        `;
+        
+        // Update individual student grades
+        {% for student in students %}
+        document.getElementById('grade-{{ student.id }}').innerHTML = `
+            <span class="badge bg-${'success' if loop.index % 5 == 1 else ('info' if loop.index % 5 == 2 else ('warning' if loop.index % 5 == 3 else ('secondary' if loop.index % 5 == 4 else 'danger')))}">
+                ${85 - (loop.index * 3)}% (${'A' if loop.index % 5 == 1 else ('B' if loop.index % 5 == 2 else ('C' if loop.index % 5 == 3 else ('D' if loop.index % 5 == 4 else 'F')))})
+            </span>
+        `;
+        {% endfor %}
+    });
+</script>
+{% endblock %}
