@@ -28,6 +28,28 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('Email already registered. Please use a different one.')
 
+class AddStudentForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    date_of_birth = DateField('Date of Birth', validators=[Optional()])
+    role = HiddenField('Role', default='student')
+    current_semester = IntegerField('Current Semester', validators=[Optional()])
+    submit = SubmitField('Create Student Account')
+    
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Username already taken. Please choose a different one.')
+    
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('Email already registered. Please use a different one.')
+
 class StudentProfileForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired()])
     last_name = StringField('Last Name', validators=[DataRequired()])
@@ -73,7 +95,7 @@ class CourseForm(FlaskForm):
     
     def validate_course_code(self, course_code):
         course = Course.query.filter_by(course_code=course_code.data).first()
-        if course and course.id != self.course_id.data:
+        if course and (not hasattr(self, 'course_id') or course.id != self.course_id.data):
             raise ValidationError('This Course Code is already in use.')
 
 class AttendanceForm(FlaskForm):

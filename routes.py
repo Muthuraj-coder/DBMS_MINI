@@ -9,7 +9,7 @@ from models import User, Role, Student, Staff, Course, Enrollment, Attendance, G
 from forms import (
     LoginForm, RegistrationForm, StudentProfileForm, StaffProfileForm, 
     CourseForm, AttendanceForm, GradeForm, BulkAttendanceForm,
-    UserSearchForm, PasswordChangeForm
+    UserSearchForm, PasswordChangeForm, AddStudentForm
 )
 from utils import requires_roles, calculate_overall_grade, calculate_attendance_percentage, get_grade_statistics
 
@@ -136,6 +136,54 @@ def add_user():
         return redirect(url_for('manage_users'))
     
     return render_template('admin/add_user.html', form=form, title='Add New User')
+
+@app.route('/staff/add_student', methods=['GET', 'POST'])
+@login_required
+@requires_roles('staff', 'admin')
+def add_student():
+    form = AddStudentForm()
+    
+    if form.validate_on_submit():
+        # First create the user account
+        role = Role.query.filter_by(name='student').first()
+        if not role:
+            flash('Student role does not exist.', 'danger')
+            return render_template('staff/add_student.html', form=form, title='Add New Student')
+        
+        # Create the user
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            role=role
+        )
+        user.set_password(form.password.data)
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # Create the student profile
+        student_id = f"STU{user.id:04d}"
+        student = Student(
+            user_id=user.id,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            student_id=student_id,
+            date_of_birth=form.date_of_birth.data,
+            current_semester=form.current_semester.data or 1
+        )
+        
+        db.session.add(student)
+        db.session.commit()
+        
+        flash(f'Student account created successfully. Student ID: {student_id}', 'success')
+        
+        # Redirect to appropriate page based on user role
+        if current_user.is_admin():
+            return redirect(url_for('manage_users'))
+        else:
+            return redirect(url_for('staff_students'))
+            
+    return render_template('staff/add_student.html', form=form, title='Add New Student')
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
