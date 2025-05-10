@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, case
 from datetime import datetime, date
 from werkzeug.security import generate_password_hash
 
@@ -227,8 +227,8 @@ def admin_dashboard():
         Course.title,
         func.count(Attendance.id).label('count'),
         func.avg(
-            func.case(
-                [(Attendance.status == 'present', 1)],
+            case(
+                (Attendance.status == 'present', 1),
                 else_=0
             )
         ).label('attendance_rate')
