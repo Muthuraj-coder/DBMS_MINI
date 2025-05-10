@@ -139,7 +139,7 @@ def add_user():
 
 @app.route('/staff/add_student', methods=['GET', 'POST'])
 @login_required
-@requires_roles('staff', 'admin')
+@requires_roles('staff')  # Only staff can add students
 def add_student():
     form = AddStudentForm()
     
@@ -176,12 +176,7 @@ def add_student():
         db.session.commit()
         
         flash(f'Student account created successfully. Student ID: {student_id}', 'success')
-        
-        # Redirect to appropriate page based on user role
-        if current_user.is_admin():
-            return redirect(url_for('manage_users'))
-        else:
-            return redirect(url_for('staff_students'))
+        return redirect(url_for('staff_students'))
             
     return render_template('staff/add_student.html', form=form, title='Add New Student')
 
@@ -227,10 +222,9 @@ def admin_dashboard():
         Course.title,
         func.count(Attendance.id).label('count'),
         func.avg(
-            case(
-                (Attendance.status == 'present', 1),
-                else_=0
-            )
+            case([
+                (Attendance.status == 'present', 1)
+            ], else_=0)
         ).label('attendance_rate')
     ).join(
         Attendance, Course.id == Attendance.course_id
@@ -1091,9 +1085,9 @@ def api_course_attendance_stats():
     attendance_stats = db.session.query(
         Course.title,
         func.count(Attendance.id).label('total'),
-        func.sum(func.case([(Attendance.status == 'present', 1)], else_=0)).label('present'),
-        func.sum(func.case([(Attendance.status == 'absent', 1)], else_=0)).label('absent'),
-        func.sum(func.case([(Attendance.status == 'excused', 1)], else_=0)).label('excused')
+        func.sum(case([(Attendance.status == 'present', 1)], else_=0)).label('present'),
+        func.sum(case([(Attendance.status == 'absent', 1)], else_=0)).label('absent'),
+        func.sum(case([(Attendance.status == 'excused', 1)], else_=0)).label('excused')
     ).join(
         Attendance, Course.id == Attendance.course_id
     ).group_by(
