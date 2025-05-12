@@ -1,21 +1,18 @@
 import os
 import logging
+from dotenv import load_dotenv
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import LoginManager
+from models import db  # Use the single db instance from models.py
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Database setup
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
+# Load environment variables
+load_dotenv()
 
 # Create the app
 app = Flask(__name__)
@@ -31,6 +28,8 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize database
+# Only one db instance, from models.py
+# Remove local Base and db = SQLAlchemy()
 db.init_app(app)
 
 # Initialize login manager
@@ -39,12 +38,9 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# Create all database tables within
- application context
+# Create all database tables within application context
 with app.app_context():
-    # Import models to register them with SQLAlchemy
     from models import User, Role, Student, Staff, Course, Enrollment, Attendance, Grade
-    
     try:
         db.create_all()
         logger.info("Database tables created")
@@ -52,11 +48,11 @@ with app.app_context():
         logger.error(f"Error creating database tables: {e}")
 
 # Import routes to register them with Flask
-from routes import *
+import routes
 
 # Call create_initial_roles when app starts
 with app.app_context():
-    from routes import create_initial_roles
+    from init_db import create_initial_roles
     create_initial_roles()
 
 # User loader for Flask-Login
