@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Student Information System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-logo">
+        <h1 class="text-center"><i class="bi bi-book me-2"></i>SIS</h1>
+        <p class="text-center text-muted">Student Information System</p>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h2 class="card-title text-center mb-4">Sign In</h2>
+            
+            <form method="post" action="{{ url_for('login') }}" class="needs-validation" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label for="{{ form.username.id }}" class="form-label">{{ form.username.label }}</label>
+                    {{ form.username(class="form-control", placeholder="Enter your username", required=true) }}
+                    <div class="invalid-feedback">Please enter your username.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.password.id }}" class="form-label">{{ form.password.label }}</label>
+                    <div class="input-group">
+                        {{ form.password(class="form-control", placeholder="Enter your password", required=true) }}
+                        <span class="input-group-text" onclick="togglePasswordVisibility('{{ form.password.id }}')">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+                    <div class="invalid-feedback">Please enter your password.</div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.remember_me(class="form-check-input") }}
+                    <label class="form-check-label" for="{{ form.remember_me.id }}">
+                        {{ form.remember_me.label }}
+                    </label>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="mt-3 text-center">
+        <p>Default admin credentials: username: <strong>admin</strong>, password: <strong>admin123</strong></p>
+    </div>
+</div>
+{% endblock %}

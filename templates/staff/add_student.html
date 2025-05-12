@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Student | Student Information System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="page-header">Add New Student</h1>
+        <a href="{{ url_for('staff_students') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Students
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <form method="post" action="{{ url_for('add_student') }}" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        {{ form.role() }}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id }}" class="form-label">{{ form.username.label }}</label>
+                            {{ form.username(class="form-control", placeholder="Choose a username", required=true) }}
+                            <div class="invalid-feedback">Please choose a username.</div>
+                            {% if form.username.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email(class="form-control", type="email", placeholder="Enter email address", required=true) }}
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password.id }}" class="form-label">{{ form.password.label }}</label>
+                            <div class="input-group">
+                                {{ form.password(class="form-control", placeholder="Enter password", required=true) }}
+                                <span class="input-group-text" onclick="togglePasswordVisibility('{{ form.password.id }}')">
+                                    <i class="bi bi-eye"></i>
+                                </span>
+                            </div>
+                            <div class="form-text">Password must be at least 8 characters long.</div>
+                            {% if form.password.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.confirm_password.id }}" class="form-label">{{ form.confirm_password.label }}</label>
+                            {{ form.confirm_password(class="form-control", placeholder="Confirm password", required=true) }}
+                            <div class="invalid-feedback">Please confirm the password.</div>
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.first_name.id }}" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name(class="form-control", placeholder="Enter first name", required=true) }}
+                            <div class="invalid-feedback">Please enter the first name.</div>
+                            {% if form.first_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.first_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.last_name.id }}" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name(class="form-control", placeholder="Enter last name", required=true) }}
+                            <div class="invalid-feedback">Please enter the last name.</div>
+                            {% if form.last_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.last_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {{ form.role(value="student", class="d-none") }}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.date_of_birth.id }}" class="form-label">{{ form.date_of_birth.label }}</label>
+                            {{ form.date_of_birth(class="form-control", type="date") }}
+                            {% if form.date_of_birth.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.date_of_birth.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.current_semester.id }}" class="form-label">{{ form.current_semester.label }}</label>
+                            {{ form.current_semester(class="form-control", type="number", min=1, placeholder="Enter current semester") }}
+                            {% if form.current_semester.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.current_semester.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

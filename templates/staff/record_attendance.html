@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Attendance | Student Information System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="page-header">Record Attendance</h1>
+        <p class="text-muted">
+            <strong>Course:</strong> {{ course.course_code }} - {{ course.title }}<br>
+            <strong>Date:</strong> {{ date.strftime('%A, %B %d, %Y') }}
+        </p>
+    </div>
+    <div class="col-md-4 text-md-end d-flex align-items-center justify-content-md-end">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-success" onclick="bulkUpdateAttendance('present')">
+                Mark All Present
+            </button>
+            <button type="button" class="btn btn-outline-danger" onclick="bulkUpdateAttendance('absent')">
+                Mark All Absent
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{{ url_for('save_attendance') }}" id="attendanceForm">
+            <input type="hidden" name="course_id" value="{{ course.id }}">
+            <input type="hidden" name="date" value="{{ date.strftime('%Y-%m-%d') }}">
+            
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search students..." onkeyup="filterTable('attendanceTable', this.value)">
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>
+                                {{ student.student_id }}
+                                <input type="hidden" name="student_{{ student.id }}" value="{{ student.id }}">
+                            </td>
+                            <td>{{ student.first_name }} {{ student.last_name }}</td>
+                            <td>
+                                <select name="status_{{ student.id }}" class="form-select">
+                                    <option value="present">Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="excused">Excused</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="remarks_{{ student.id }}" class="form-control" placeholder="Optional remarks">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if students %}
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save Attendance Records
+                </button>
+                <a href="{{ url_for('staff_attendance') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i> No students are enrolled in this course.
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

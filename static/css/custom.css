@@ -1,0 +1,176 @@
+/* 
+ * Student Information System
+ * Custom styles
+ */
+
+/* Only add styles that are not available in Bootstrap */
+
+/* Dashboard cards */
+.dashboard-card {
+    transition: transform 0.2s;
+    height: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Dashboard stats */
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Attendance status indicators */
+.attendance-present {
+    color: var(--bs-success);
+}
+
+.attendance-absent {
+    color: var(--bs-danger);
+}
+
+.attendance-excused {
+    color: var(--bs-warning);
+}
+
+/* Grade indicators */
+.grade-a {
+    color: var(--bs-success);
+}
+
+.grade-b {
+    color: var(--bs-info);
+}
+
+.grade-c {
+    color: var(--bs-warning);
+}
+
+.grade-d {
+    color: var(--bs-orange);
+}
+
+.grade-f {
+    color: var(--bs-danger);
+}
+
+/* Profile sections */
+.profile-header {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.25rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 2rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Improve form styles */
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-info-rgb), 0.25);
+}
+
+/* Responsive tables */
+.table-responsive {
+    margin-bottom: 1.5rem;
+}
+
+/* Page header */
+.page-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Auth pages */
+.auth-container {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.auth-logo {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Error styles */
+.error-container {
+    text-align: center;
+    padding: 5rem 1rem;
+}
+
+.error-code {
+    font-size: 5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Custom animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+}
