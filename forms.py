@@ -15,7 +15,18 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    role = SelectField('Role', choices=[('admin', 'Administrator'), ('staff', 'Staff')])  # Removed student option
+    role = SelectField('Role', choices=[('staff', 'Staff'), ('student', 'Student')])
+    # Staff/Student extra fields
+    first_name = StringField('First Name')
+    last_name = StringField('Last Name')
+    department = StringField('Department')
+    position = StringField('Position')
+    date_of_birth = DateField('Date of Birth', validators=[Optional()])
+    address = StringField('Address')
+    phone_number = StringField('Phone Number')
+    hire_date = DateField('Hire Date', validators=[Optional()])
+    enrollment_date = DateField('Enrollment Date', validators=[Optional()])
+    current_semester = IntegerField('Current Semester', validators=[Optional()])
     submit = SubmitField('Register')
     
     def validate_username(self, username):

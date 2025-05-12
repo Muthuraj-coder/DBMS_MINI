@@ -76,22 +76,18 @@ def register():
 @requires_roles('admin')
 def add_user():
     form = RegistrationForm()
-    
     if form.validate_on_submit():
         role = Role.query.filter_by(name=form.role.data).first()
         if not role:
             flash(f'Role {form.role.data} does not exist.', 'danger')
             return render_template('admin/add_user.html', form=form, title='Add New User')
-        
         # Check if username or email already exists
         if User.query.filter_by(username=form.username.data).first():
             flash('Username already exists.', 'danger')
             return render_template('admin/add_user.html', form=form, title='Add New User')
-        
         if User.query.filter_by(email=form.email.data).first():
             flash('Email already exists.', 'danger')
             return render_template('admin/add_user.html', form=form, title='Add New User')
-        
         # Create the user
         user = User(
             username=form.username.data,
@@ -99,42 +95,46 @@ def add_user():
             role=role
         )
         user.set_password(form.password.data)
-        
         db.session.add(user)
         db.session.commit()
-        
-        # If the role is staff, create a staff profile
+        # If the role is staff, create a staff profile with all details
         if role.name == 'staff':
             staff_id = f"STAFF{user.id:04d}"
             staff = Staff(
                 user_id=user.id,
-                first_name="",
-                last_name="",
-                staff_id=staff_id
+                first_name=form.first_name.data or '',
+                last_name=form.last_name.data or '',
+                staff_id=staff_id,
+                department=form.department.data or '',
+                position=form.position.data or '',
+                date_of_birth=form.date_of_birth.data,
+                address=form.address.data or '',
+                phone_number=form.phone_number.data or '',
+                hire_date=form.hire_date.data
             )
             db.session.add(staff)
             db.session.commit()
-            
             flash(f'Staff account created with ID: {staff_id}.', 'success')
-        
-        # If the role is student, create a student profile
+        # If the role is student, create a student profile with all details
         elif role.name == 'student':
             student_id = f"STU{user.id:04d}"
             student = Student(
                 user_id=user.id,
-                first_name="",
-                last_name="",
-                student_id=student_id
+                first_name=form.first_name.data or '',
+                last_name=form.last_name.data or '',
+                student_id=student_id,
+                date_of_birth=form.date_of_birth.data,
+                address=form.address.data or '',
+                phone_number=form.phone_number.data or '',
+                enrollment_date=form.enrollment_date.data,
+                current_semester=form.current_semester.data
             )
             db.session.add(student)
             db.session.commit()
-            
             flash(f'Student account created with ID: {student_id}.', 'success')
         else:
             flash('Admin account created successfully.', 'success')
-        
         return redirect(url_for('manage_users'))
-    
     return render_template('admin/add_user.html', form=form, title='Add New User')
 
 @app.route('/staff/add_student', methods=['GET', 'POST'])
