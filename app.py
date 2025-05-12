@@ -23,7 +23,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key_for_develo
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
 
 # Configure database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "mysql+mysqlconnector://root:root@localhost/student_info_system")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://user:password@localhost/dbname")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -39,7 +39,8 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# Create all database tables within application context
+# Create all database tables within
+ application context
 with app.app_context():
     # Import models to register them with SQLAlchemy
     from models import User, Role, Student, Staff, Course, Enrollment, Attendance, Grade
